@@ -8,7 +8,7 @@
 
 #define BLOCK_SIZE 16
 
-float* CreateMatrix(float tam,int type)
+float* CreateMatrix(int tam,int type)
 {
     float* m = new float[tam*tam];
     
@@ -40,9 +40,9 @@ float* CreateMatrix(float tam,int type)
     return m;
 }
 
-float* MultiplyMatrix(float* a, float* b, float*c,int tam)
+float* MultiplyMatrix(float* a, float* b, float* c, int tam)
 {
-    float aux;
+    double aux;
     for (int i = 0; i < tam; i++)
     {        
         for (int j = 0; j < tam; j++)
@@ -50,9 +50,9 @@ float* MultiplyMatrix(float* a, float* b, float*c,int tam)
             aux = 0;
             for (int k = 0; k < tam; k++)
             {
-                aux += a[i * tam + k ] * b[k * tam + j ];
+                aux += a[i * tam + k] * b[k * tam + j];
             }
-            c[i * tam + j ] = aux;
+            c[i * tam + j ] =aux;
         }
     }
 
@@ -212,7 +212,7 @@ float* CudaLocalSetUp(float* ma, float* mb, float* mc, int tam)
     cudaMemcpy(dev_ma, ma, size * sizeof(float), cudaMemcpyHostToDevice);
     cudaMemcpy(dev_mb, mb, size * sizeof(float), cudaMemcpyHostToDevice);
 
-    dim3 dimGrid((tam + BLOCK_SIZE - 1) / BLOCK_SIZE, (tam + BLOCK_SIZE - 1) / BLOCK_SIZE);//maybe here is diferent
+    dim3 dimGrid((tam + BLOCK_SIZE - 1) / BLOCK_SIZE, (tam + BLOCK_SIZE - 1) / BLOCK_SIZE);
     dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
 
     MultiplyGPUMult << <dimGrid, dimBlock >> > (dev_ma, dev_mb, dev_mc, t);
@@ -261,7 +261,6 @@ int main()
     mB = CreateMatrix(tam,1);
     mC = CreateMatrix(tam,2);
 
-
     std::cout << "CPU vs GPU vs GPU(local): \n [1] CPU \n [2] GPU \n [3] GPU(local) \n";
     std::cin >> in;
 
@@ -274,8 +273,7 @@ int main()
         break;
     case 2:
         timeForExecution = clock();
-        mC = CudaSetUp(mA,mB,mC,tam);
-        
+        mC = CudaSetUp(mA,mB,mC,tam);        
         timeForExecution = clock() - timeForExecution;
         break;
     case 3:
