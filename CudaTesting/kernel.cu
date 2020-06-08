@@ -92,7 +92,7 @@ __global__ void MultiplyGPUMult(float * a, float *b, float *c,int t)
     int row = threadIdx.y;
     int col = threadIdx.x;
 
-    for (int m = 0; m < t / BLOCK_SIZE; ++m)
+    for (int m = 0; m < t / BLOCK_SIZE; m++)
     {
         float* Asub = GetSubMatrix(a, t, blockRow, m);
         float* Bsub = GetSubMatrix(b, t, m, blockCol);
@@ -105,7 +105,7 @@ __global__ void MultiplyGPUMult(float * a, float *b, float *c,int t)
 
         __syncthreads();
 
-        for (int e = 0; e < BLOCK_SIZE; ++e)
+        for (int e = 0; e < BLOCK_SIZE; e++)
         {
             Cvalue += As[row][e] * Bs[e][col];
         }
@@ -280,12 +280,12 @@ int main()
         break;
     case 3:
         timeForExecution = clock();
-        CudaLocalSetUp(mA, mB, mC, tam);
+        mC = CudaLocalSetUp(mA, mB, mC, tam);
         timeForExecution = clock() - timeForExecution;
         break;
     }
    
-    //PrintMatrix(mC, tam);
+    PrintMatrix(mC, tam);
     
     std::cout << "Tempo levado: " << (float)timeForExecution/CLOCKS_PER_SEC << "\n";
 
